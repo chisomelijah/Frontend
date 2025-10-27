@@ -1,18 +1,15 @@
 <template>
   <div id="app">
-    <header class="app-header">
-      <h1>After-School Classes Booking System</h1>
-      <div class="header-right">
-        <button v-if="!user" @click="showAuth = true">Login / Signup</button>
-        <UserMenu v-else :user="user" @logout="logout" />
-      </div>
-    </header>
+    <h1>After-Skool</h1>
 
-    <!-- Main content -->
-    <div v-if="showCart">
-      <ShoppingCart :cart="cart" :removeFromCart="removeFromCart" />
-    </div>
-    <div v-else>
+    <button :disabled="cart.length === 0" @click="toggleCart" style="margin: .5rem;">
+      {{ showCart ? 'Back to Lessons' : `View Cart (${cart.length})` }}
+    </button>
+
+    <button @click="showAuth = true">Login / Signup</button>
+
+    <div v-if="!showCart">
+      <!-- Sort controls + lessons -->
       <div class="sort-controls">
         <label>Sort by:</label>
         <select v-model="sortAttribute">
@@ -30,38 +27,49 @@
       <LessonList :lessons="sortedLessons" :addToCart="addToCart" />
     </div>
 
-    <!-- Auth Modal -->
-    <AuthModal v-if="showAuth" @close="showAuth = false" @login="loginUser" />
+    <div v-else>
+      <ShoppingCart :cart="cart" :removeFromCart="removeFromCart" />
+    </div>
   </div>
+  <AuthModal v-if="showAuth" @close="showAuth = false" />
 </template>
 
 <script>
 import LessonList from './components/LessonList.vue'
 import ShoppingCart from './components/ShoppingCart.vue'
 import AuthModal from './components/AuthModal.vue'
-import UserMenu from './components/UserMenu.vue'
 
 export default {
-  components: { LessonList, ShoppingCart, AuthModal, UserMenu },
+  components: { LessonList, ShoppingCart, AuthModal },
   data() {
     return {
-      user: null,
-      showAuth: false,
       showCart: false,
+      showAuth: false,
+      cart: [],
       sortAttribute: 'subject',
       sortOrder: 'asc',
       lessons: [
+
         { id: 'lesson001', subject: 'Mathematics', location: 'Hendon', price: 100, spaces: 5, icon: 'fa-calculator' },
-        { id: 'lesson002', subject: 'English', location: 'Colindale', price: 80, spaces: 5, icon: 'fa-book' },
-        { id: 'lesson003', subject: 'Science', location: 'Brent', price: 90, spaces: 5, icon: 'fa-flask' }
-      ],
-      cart: []
+        { id: 'lesson002', subject: 'English Literature', location: 'Colindale', price: 85, spaces: 3, icon: 'fa-book-open' },
+        { id: 'lesson003', subject: 'Computer Science', location: 'Brent', price: 95, spaces: 4, icon: 'fa-laptop-code' },
+        { id: 'lesson004', subject: 'Physics', location: 'Barnet', price: 110, spaces: 6, icon: 'fa-atom' },
+        { id: 'lesson005', subject: 'Biology', location: 'Kilburn', price: 90, spaces: 2, icon: 'fa-dna' },
+        { id: 'lesson006', subject: 'Networking Fundamentals', location: 'Hendon', price: 120, spaces: 5, icon: 'fa-network-wired' },
+        { id: 'lesson007', subject: 'Chemistry', location: 'Colindale', price: 100, spaces: 4, icon: 'fa-vials' },
+        { id: 'lesson008', subject: 'Graphic Design', location: 'Brent', price: 80, spaces: 3, icon: 'fa-paint-brush' },
+        { id: 'lesson009', subject: 'Product Design', location: 'Brondesbury', price: 105, spaces: 6, icon: 'fa-cube' },
+        { id: 'lesson010', subject: 'Web Development', location: 'Golders Green', price: 95, spaces: 5, icon: 'fa-code' }
+
+      ]
     }
+
   },
   computed: {
     sortedLessons() {
       return [...this.lessons].sort((a, b) => {
-        let x = a[this.sortAttribute], y = b[this.sortAttribute]
+        let x = a[this.sortAttribute]
+        let y = b[this.sortAttribute]
         if (typeof x === 'string') x = x.toLowerCase()
         if (typeof y === 'string') y = y.toLowerCase()
         return this.sortOrder === 'asc'
@@ -82,31 +90,74 @@ export default {
       item.spaces++
       this.cart.splice(index, 1)
     },
-    loginUser(credentials) {
-      // Simulated login
-      this.user = { name: credentials.name, email: credentials.email }
-      this.showAuth = false
-    },
-    logout() {
-      this.user = null
+    toggleCart() {
+      this.showCart = !this.showCart
     }
   }
 }
 </script>
 
 <style>
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  background-color: #f9f9f8;
+  /* soft white */
+  color: #222;
+  /* deep neutral text */
+  line-height: 1.6;
 }
 
-.header-right button {
-  padding: 8px 14px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+#app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  color: #111;
+}
+
+button,
+select,
+input {
+  font-family: inherit;
+  font-weight: 500;
   background: #fff;
-  cursor: pointer;
+  color: #222;
+  border: 1px solid #d2d2d2;
+  border-radius: 8px;
+  padding: 8px 14px;
+  transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled),
+select:hover,
+input:focus {
+  border-color: #cfcfcf;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sort-controls {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 1.5rem 0;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 1.5rem 0;
 }
 </style>
