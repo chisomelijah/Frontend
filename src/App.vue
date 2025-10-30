@@ -6,7 +6,6 @@
       {{ showCart ? 'Back to Lessons' : `View Cart (${cart.length})` }}
     </button>
 
-    <button @click="showAuth = true">Login / Signup</button>
 
     <div v-if="!showCart">
       <!-- Sort controls + lessons -->
@@ -31,20 +30,17 @@
       <ShoppingCart :cart="cart" :removeFromCart="removeFromCart" />
     </div>
   </div>
-  <AuthModal v-if="showAuth" @close="showAuth = false" />
 </template>
 
 <script>
 import LessonList from './components/LessonList.vue'
 import ShoppingCart from './components/ShoppingCart.vue'
-import AuthModal from './components/AuthModal.vue'
 
 export default {
-  components: { LessonList, ShoppingCart, AuthModal },
+  components: { LessonList, ShoppingCart },
   data() {
     return {
       showCart: false,
-      showAuth: false,
       cart: [],
       sortAttribute: 'subject',
       sortOrder: 'asc',
