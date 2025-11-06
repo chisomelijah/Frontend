@@ -6,16 +6,15 @@
       {{ showCart ? 'Back to Lessons' : `View Cart (${cart.length})` }}
     </button>
 
-
     <div v-if="!showCart">
       <!-- Sort controls + lessons -->
       <div class="sort-controls">
         <label>Sort by:</label>
         <select v-model="sortAttribute">
-          <option value="subject">Subject</option>
+          <option value="topic">Topic</option>
           <option value="location">Location</option>
           <option value="price">Price</option>
-          <option value="spaces">Spaces</option>
+          <option value="space">Spaces</option>
         </select>
         <select v-model="sortOrder">
           <option value="asc">Ascending</option>
@@ -38,29 +37,17 @@ import ShoppingCart from './components/ShoppingCart.vue'
 
 export default {
   components: { LessonList, ShoppingCart },
+
   data() {
     return {
       showCart: false,
       cart: [],
-      sortAttribute: 'subject',
+      sortAttribute: 'topic',
       sortOrder: 'asc',
-      lessons: [
-
-        { id: 'lesson001', subject: 'Mathematics', location: 'Hendon', price: 100, spaces: 5, icon: 'fa-calculator' },
-        { id: 'lesson002', subject: 'English Literature', location: 'Colindale', price: 85, spaces: 3, icon: 'fa-book-open' },
-        { id: 'lesson003', subject: 'Computer Science', location: 'Brent', price: 95, spaces: 4, icon: 'fa-laptop-code' },
-        { id: 'lesson004', subject: 'Physics', location: 'Barnet', price: 110, spaces: 6, icon: 'fa-atom' },
-        { id: 'lesson005', subject: 'Biology', location: 'Kilburn', price: 90, spaces: 2, icon: 'fa-dna' },
-        { id: 'lesson006', subject: 'Networking Fundamentals', location: 'Hendon', price: 120, spaces: 5, icon: 'fa-network-wired' },
-        { id: 'lesson007', subject: 'Chemistry', location: 'Colindale', price: 100, spaces: 4, icon: 'fa-vials' },
-        { id: 'lesson008', subject: 'Graphic Design', location: 'Brent', price: 80, spaces: 3, icon: 'fa-paint-brush' },
-        { id: 'lesson009', subject: 'Product Design', location: 'Brondesbury', price: 105, spaces: 6, icon: 'fa-cube' },
-        { id: 'lesson010', subject: 'Web Development', location: 'Golders Green', price: 95, spaces: 5, icon: 'fa-code' }
-
-      ]
+      lessons: [] // fetched from backend
     }
-
   },
+
   computed: {
     sortedLessons() {
       return [...this.lessons].sort((a, b) => {
@@ -74,20 +61,37 @@ export default {
       })
     }
   },
+
   methods: {
     addToCart(lesson) {
-      if (lesson.spaces > 0) {
-        lesson.spaces--
+      if (lesson.space > 0) {
+        lesson.space--
         this.cart.push(lesson)
       }
     },
     removeFromCart(index) {
       const item = this.cart[index]
-      item.spaces++
+      item.space++
       this.cart.splice(index, 1)
     },
     toggleCart() {
       this.showCart = !this.showCart
+    }
+  },
+
+  async mounted() {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/lessons`)
+      const data = await response.json()
+
+      this.lessons = data.map(lesson => ({
+        ...lesson,
+        icon: 'fa-book'
+      }))
+
+      console.log('✅ Lessons loaded:', this.lessons)
+    } catch (err) {
+      console.error('❌ Failed to fetch lessons:', err)
     }
   }
 }
@@ -100,9 +104,7 @@ body {
   margin: 0;
   font-family: 'Manrope', sans-serif;
   background-color: #f9f9f8;
-  /* soft white */
   color: #222;
-  /* deep neutral text */
   line-height: 1.6;
 }
 
