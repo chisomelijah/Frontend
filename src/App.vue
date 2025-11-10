@@ -11,11 +11,12 @@
       <div class="sort-controls">
         <label>Sort by:</label>
         <select v-model="sortAttribute">
-          <option value="topic">Topic</option>
+          <option value="subject">Subject</option>
           <option value="location">Location</option>
           <option value="price">Price</option>
-          <option value="space">Spaces</option>
+          <option value="spaces">Spaces</option>
         </select>
+
         <select v-model="sortOrder">
           <option value="asc">Ascending</option>
           <option value="desc">Descending</option>
@@ -64,16 +65,17 @@ export default {
 
   methods: {
     addToCart(lesson) {
-      if (lesson.space > 0) {
-        lesson.space--
+      if (lesson.spaces > 0) {
+        lesson.spaces--
         this.cart.push(lesson)
       }
     },
     removeFromCart(index) {
       const item = this.cart[index]
-      item.space++
+      item.spaces++
       this.cart.splice(index, 1)
     },
+
     toggleCart() {
       this.showCart = !this.showCart
     }
@@ -84,8 +86,13 @@ export default {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/lessons`)
       const data = await response.json()
 
+
       this.lessons = data.map(lesson => ({
-        ...lesson,
+        id: lesson._id,
+        subject: lesson.topic,
+        location: lesson.location,
+        price: lesson.price,
+        spaces: lesson.space,
         icon: 'fa-book'
       }))
 
@@ -94,6 +101,7 @@ export default {
       console.error('❌ Failed to fetch lessons:', err)
     }
   }
+
 }
 </script>
 
