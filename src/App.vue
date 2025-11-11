@@ -2,9 +2,10 @@
   <div id="app">
     <h1>After-Skool</h1>
 
-    <button :disabled="cart.length === 0" @click="toggleCart" style="margin: 0.5rem;">
+    <button @click="toggleCart" :class="{ disabled: cart.length === 0 && !showCart }" style="margin: .5rem;">
       {{ showCart ? 'Back to Lessons' : `View Cart (${cart.length})` }}
     </button>
+
 
     <div v-if="!showCart">
       <!-- Sort controls + lessons -->
@@ -27,7 +28,8 @@
     </div>
 
     <div v-else>
-      <ShoppingCart :cart="cart" :removeFromCart="removeFromCart" />
+      <ShoppingCart :cart="cart" :removeFromCart="removeFromCart" @order-success="handleOrderSuccess" />
+
     </div>
   </div>
 </template>
@@ -79,42 +81,47 @@ export default {
 
     toggleCart() {
       this.showCart = !this.showCart
-    }
-  },
+    },
+    handleOrderSuccess() {
+      console.log('✅ Order success — returning to lessons...')
+      setTimeout(() => {
+        this.showCart = false // switch back to lessons
+      }, 2000)
+    },
 
-  async mounted() {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/lessons`)
-      const data = await response.json()
+    async mounted() {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/lessons`)
+        const data = await response.json()
 
-      const icons = {
-        Math: 'fa-square-root-variable',
-        English: 'fa-book-open',
-        Science: 'fa-flask-vial',
-        Art: 'fa-palette',
-        Music: 'fa-music',
-        History: 'fa-landmark',
-        Geography: 'fa-globe-europe',
-        Spanish: 'fa-language',
-        Biology: 'fa-dna',
-        Chemistry: 'fa-vials'
+        const icons = {
+          Math: 'fa-square-root-variable',
+          English: 'fa-book-open',
+          Science: 'fa-flask-vial',
+          Art: 'fa-palette',
+          Music: 'fa-music',
+          History: 'fa-landmark',
+          Geography: 'fa-globe-europe',
+          Spanish: 'fa-language',
+          Biology: 'fa-dna',
+          Chemistry: 'fa-vials'
+        }
+
+        this.lessons = data.map(lesson => ({
+          id: lesson._id,
+          topic: lesson.topic,
+          location: lesson.location,
+          price: lesson.price,
+          spaces: lesson.space, // 🔥 consistent with backend
+          icon: icons[lesson.topic] || 'fa-book' // fallback icon
+        }))
+
+        console.log('✅ Lessons loaded:', this.lessons)
+      } catch (err) {
+        console.error('❌ Failed to fetch lessons:', err)
       }
-
-      this.lessons = data.map(lesson => ({
-        id: lesson._id,
-        topic: lesson.topic,
-        location: lesson.location,
-        price: lesson.price,
-        spaces: lesson.space, // 🔥 consistent with backend
-        icon: icons[lesson.topic] || 'fa-book' // fallback icon
-      }))
-
-      console.log('✅ Lessons loaded:', this.lessons)
-    } catch (err) {
-      console.error('❌ Failed to fetch lessons:', err)
     }
   }
-}
 </script>
 
 <style>
@@ -161,9 +168,15 @@ input:focus {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
-button:disabled {
+button.disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  pointer-events: none;
+}
+
+button.disabled:hover {
+  border-color: #d2d2d2;
+  box-shadow: none;
 }
 
 .sort-controls {

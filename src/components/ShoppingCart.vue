@@ -109,12 +109,19 @@ export default {
         this.checkoutSuccess = true
         this.name = ''
         this.phone = ''
-        this.cart.splice(0, this.cart.length) // clear cart
+
+        // ✅ Clear the cart AFTER success
+        this.cart.splice(0, this.cart.length)
+
+        // ✅ Emit an event to parent (App.vue)
+        this.$emit('order-success')
+
       } catch (err) {
         console.error('❌ Checkout error:', err)
         this.checkoutError = true
       }
     }
+
   }
 }
 </script>
@@ -265,6 +272,19 @@ input:focus {
   margin-top: 12px;
   font-weight: 500;
   text-align: center;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .error-msg {
