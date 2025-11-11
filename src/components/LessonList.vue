@@ -2,7 +2,7 @@
     <div class="lesson-list">
         <div v-for="lesson in lessons" :key="lesson.id" class="lesson-card">
             <i :class="['fa', lesson.icon]"></i>
-            <h2>{{ lesson.subject }}</h2>
+            <h2>{{ lesson.topic }}</h2>
             <p>📍 {{ lesson.location }}</p>
             <p>💷 £{{ lesson.price }}</p>
             <p>👥 {{ lesson.spaces }} spaces available</p>
@@ -38,6 +38,15 @@ export default {
     font-size: 14px;
     margin-top: 12px;
     transition: background-color 0.3s ease;
+}
+
+.lesson-list button:hover:not(:disabled) {
+    background-color: #333;
+}
+
+.lesson-list button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .lesson-card {

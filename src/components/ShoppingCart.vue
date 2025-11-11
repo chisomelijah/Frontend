@@ -12,13 +12,9 @@
         </div>
 
         <div v-else>
-          <div
-            v-for="(lesson, index) in cart"
-            :key="index"
-            class="cart-item"
-          >
+          <div v-for="(lesson, index) in cart" :key="index" class="cart-item">
             <div class="item-info">
-              <h4>{{ lesson.subject }}</h4>
+              <h4>{{ lesson.topic }}</h4>
               <p class="location">{{ lesson.location }}</p>
               <p class="price">£{{ lesson.price }}</p>
             </div>
@@ -39,35 +35,25 @@
         <form @submit.prevent="checkout">
           <div class="form-group">
             <label>Name</label>
-            <input
-              v-model="name"
-              type="text"
-              placeholder="John Doe"
-              :class="{ invalid: !isValidName && name }"
-            />
+            <input v-model="name" type="text" placeholder="John Doe" :class="{ invalid: !isValidName && name }" />
           </div>
 
           <div class="form-group">
             <label>Phone</label>
-            <input
-              v-model="phone"
-              type="text"
-              placeholder="Numbers only"
-              :class="{ invalid: !isValidPhone && phone }"
-            />
+            <input v-model="phone" type="text" placeholder="Numbers only"
+              :class="{ invalid: !isValidPhone && phone }" />
           </div>
 
-          <button
-            class="checkout-btn"
-            type="submit"
-            :disabled="!isValidName || !isValidPhone || cart.length === 0"
-          >
+          <button class="checkout-btn" type="submit" :disabled="!isValidName || !isValidPhone || cart.length === 0">
             Confirm Order
           </button>
         </form>
 
         <p v-if="checkoutSuccess" class="success-msg">
           ✅ Order submitted successfully!
+        </p>
+        <p v-if="checkoutError" class="error-msg">
+          ❌ Failed to submit order. Please try again.
         </p>
       </div>
     </div>
@@ -81,7 +67,8 @@ export default {
     return {
       name: '',
       phone: '',
-      checkoutSuccess: false
+      checkoutSuccess: false,
+      checkoutError: false
     }
   },
   computed: {
@@ -96,10 +83,37 @@ export default {
     }
   },
   methods: {
-    checkout() {
-      this.checkoutSuccess = true
-      this.name = ''
-      this.phone = ''
+    async checkout() {
+      this.checkoutSuccess = false
+      this.checkoutError = false
+
+      try {
+        const orderData = {
+          name: this.name,
+          phone: this.phone,
+          lessons: this.cart.map(item => ({
+            lessonId: item.id,
+            topic: item.topic,
+            price: item.price
+          }))
+        }
+
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/orders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderData)
+        })
+
+        if (!response.ok) throw new Error('Order submission failed')
+
+        this.checkoutSuccess = true
+        this.name = ''
+        this.phone = ''
+        this.cart.splice(0, this.cart.length) // clear cart
+      } catch (err) {
+        console.error('❌ Checkout error:', err)
+        this.checkoutError = true
+      }
     }
   }
 }
@@ -179,6 +193,7 @@ export default {
   cursor: pointer;
   transition: color 0.2s;
 }
+
 .remove-btn:hover {
   color: #e74c3c;
 }
@@ -219,7 +234,7 @@ input {
 
 input:focus {
   border-color: #bbb;
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.03);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.03);
   outline: none;
 }
 
@@ -245,6 +260,16 @@ input:focus {
 .success-msg {
   color: #2e7d32;
   background: #eaf6ea;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 12px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.error-msg {
+  color: #b71c1c;
+  background: #fdecea;
   border-radius: 8px;
   padding: 8px 12px;
   margin-top: 12px;

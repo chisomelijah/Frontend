@@ -2,7 +2,7 @@
   <div id="app">
     <h1>After-Skool</h1>
 
-    <button :disabled="cart.length === 0" @click="toggleCart" style="margin: .5rem;">
+    <button :disabled="cart.length === 0" @click="toggleCart" style="margin: 0.5rem;">
       {{ showCart ? 'Back to Lessons' : `View Cart (${cart.length})` }}
     </button>
 
@@ -11,7 +11,7 @@
       <div class="sort-controls">
         <label>Sort by:</label>
         <select v-model="sortAttribute">
-          <option value="subject">Subject</option>
+          <option value="topic">Topic</option>
           <option value="location">Location</option>
           <option value="price">Price</option>
           <option value="spaces">Spaces</option>
@@ -70,6 +70,7 @@ export default {
         this.cart.push(lesson)
       }
     },
+
     removeFromCart(index) {
       const item = this.cart[index]
       item.spaces++
@@ -86,14 +87,26 @@ export default {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/lessons`)
       const data = await response.json()
 
+      const icons = {
+        Math: 'fa-square-root-variable',
+        English: 'fa-book-open',
+        Science: 'fa-flask-vial',
+        Art: 'fa-palette',
+        Music: 'fa-music',
+        History: 'fa-landmark',
+        Geography: 'fa-globe-europe',
+        Spanish: 'fa-language',
+        Biology: 'fa-dna',
+        Chemistry: 'fa-vials'
+      }
 
       this.lessons = data.map(lesson => ({
         id: lesson._id,
-        subject: lesson.topic,
+        topic: lesson.topic,
         location: lesson.location,
         price: lesson.price,
-        spaces: lesson.space,
-        icon: 'fa-book'
+        spaces: lesson.space, // 🔥 consistent with backend
+        icon: icons[lesson.topic] || 'fa-book' // fallback icon
       }))
 
       console.log('✅ Lessons loaded:', this.lessons)
@@ -101,7 +114,6 @@ export default {
       console.error('❌ Failed to fetch lessons:', err)
     }
   }
-
 }
 </script>
 
