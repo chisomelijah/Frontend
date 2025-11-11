@@ -1,36 +1,39 @@
 <template>
   <div id="app">
-    <h1>After-Skool</h1>
+    <!-- Hero Section -->
+    <header class="hero">
+      <h1 class="brand">After-Skool</h1>
+      <h2 class="tagline">Level Up Your Learning</h2>
+      <p class="subtitle">
+        Discover after-school classes designed to inspire curiosity, creativity, and growth.
+      </p>
+      <button @click="showCart = false" class="primary-btn">Browse Lessons</button>
+    </header>
 
-    <button @click="toggleCart" :class="{ disabled: cart.length === 0 && !showCart }" style="margin: .5rem;">
-      {{ showCart ? 'Back to Lessons' : `View Cart (${cart.length})` }}
-    </button>
+    <!-- Main Content -->
+    <main>
+      <div v-if="!showCart">
+        <div class="sort-controls">
+          <label>Sort by:</label>
+          <select v-model="sortAttribute">
+            <option value="topic">Topic</option>
+            <option value="location">Location</option>
+            <option value="price">Price</option>
+            <option value="space">Spaces</option>
+          </select>
+          <select v-model="sortOrder">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
 
-
-    <div v-if="!showCart">
-      <!-- Sort controls + lessons -->
-      <div class="sort-controls">
-        <label>Sort by:</label>
-        <select v-model="sortAttribute">
-          <option value="topic">Topic</option>
-          <option value="location">Location</option>
-          <option value="price">Price</option>
-          <option value="spaces">Spaces</option>
-        </select>
-
-        <select v-model="sortOrder">
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-        </select>
+        <LessonList :lessons="sortedLessons" :addToCart="addToCart" />
       </div>
 
-      <LessonList :lessons="sortedLessons" :addToCart="addToCart" />
-    </div>
-
-    <div v-else>
-      <ShoppingCart :cart="cart" :removeFromCart="removeFromCart" @order-success="handleOrderSuccess" />
-
-    </div>
+      <div v-else>
+        <ShoppingCart :cart="cart" :removeFromCart="removeFromCart" />
+      </div>
+    </main>
   </div>
 </template>
 
@@ -40,17 +43,15 @@ import ShoppingCart from './components/ShoppingCart.vue'
 
 export default {
   components: { LessonList, ShoppingCart },
-
   data() {
     return {
       showCart: false,
       cart: [],
       sortAttribute: 'topic',
       sortOrder: 'asc',
-      lessons: [] // fetched from backend
+      lessons: []
     }
   },
-
   computed: {
     sortedLessons() {
       return [...this.lessons].sort((a, b) => {
@@ -64,74 +65,63 @@ export default {
       })
     }
   },
-
   methods: {
     addToCart(lesson) {
-      if (lesson.spaces > 0) {
-        lesson.spaces--
+      if (lesson.space > 0) {
+        lesson.space--
         this.cart.push(lesson)
       }
     },
-
     removeFromCart(index) {
       const item = this.cart[index]
-      item.spaces++
+      item.space++
       this.cart.splice(index, 1)
     },
-
     toggleCart() {
       this.showCart = !this.showCart
-    },
-    handleOrderSuccess() {
-      console.log('✅ Order success — returning to lessons...')
-      setTimeout(() => {
-        this.showCart = false // switch back to lessons
-      }, 2000)
-    },
+    }
+  },
+  async mounted() {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/lessons`)
+      const data = await response.json()
 
-    async mounted() {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/lessons`)
-        const data = await response.json()
-
-        const icons = {
-          Math: 'fa-square-root-variable',
-          English: 'fa-book-open',
-          Science: 'fa-flask-vial',
-          Art: 'fa-palette',
-          Music: 'fa-music',
-          History: 'fa-landmark',
-          Geography: 'fa-globe-europe',
-          Spanish: 'fa-language',
-          Biology: 'fa-dna',
-          Chemistry: 'fa-vials'
-        }
-
-        this.lessons = data.map(lesson => ({
-          id: lesson._id,
-          topic: lesson.topic,
-          location: lesson.location,
-          price: lesson.price,
-          spaces: lesson.space, // 🔥 consistent with backend
-          icon: icons[lesson.topic] || 'fa-book' // fallback icon
-        }))
-
-        console.log('✅ Lessons loaded:', this.lessons)
-      } catch (err) {
-        console.error('❌ Failed to fetch lessons:', err)
+      const icons = {
+        Math: 'fa-square-root-variable',
+        English: 'fa-book-open',
+        Science: 'fa-flask-vial',
+        Art: 'fa-palette',
+        Music: 'fa-music',
+        History: 'fa-landmark',
+        Geography: 'fa-globe-europe',
+        Spanish: 'fa-language',
+        Biology: 'fa-dna',
+        Chemistry: 'fa-vials'
       }
+
+      this.lessons = data.map(lesson => ({
+        id: lesson._id,
+        topic: lesson.topic,
+        location: lesson.location,
+        price: lesson.price,
+        space: lesson.space,
+        icon: icons[lesson.topic] || 'fa-book'
+      }))
+    } catch (err) {
+      console.error('❌ Failed to fetch lessons:', err)
     }
   }
+}
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
 
 body {
   margin: 0;
   font-family: 'Manrope', sans-serif;
-  background-color: #f9f9f8;
-  color: #222;
+  background-color: #f7f7f7;
+  color: #111;
   line-height: 1.6;
 }
 
@@ -141,54 +131,112 @@ body {
   padding: 2rem;
 }
 
-h1,
-h2,
-h3 {
-  font-weight: 700;
+/* === HERO CASCADE === */
+.hero {
+  text-align: center;
+  padding: 5rem 1rem 3rem;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  margin-bottom: 2rem;
+}
+
+.brand {
+  font-weight: 800;
+  font-size: 2.8rem;
+  letter-spacing: -1px;
+  margin: 0;
   color: #111;
 }
 
-button,
-select,
-input {
-  font-family: inherit;
-  font-weight: 500;
+.tagline {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0.6rem 0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto 1.5rem;
+}
+
+.primary-btn {
+  background: #111;
+  color: #fff;
+  border: none;
+  padding: 0.9rem 1.8rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.primary-btn:hover {
+  background: #ffb300;
+  color: #111;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* === SORT CONTROLS === */
+.sort-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
   background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin: 2rem auto;
+  max-width: 600px;
+}
+
+.sort-controls label {
+  font-weight: 600;
+  font-size: 1rem;
   color: #222;
-  border: 1px solid #d2d2d2;
-  border-radius: 8px;
-  padding: 8px 14px;
+}
+
+.sort-controls select {
+  border: 1px solid #ddd;
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  background: #f9f9f9;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 150px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.sort-controls select:hover,
+.sort-controls select:focus {
+  background: #fff;
+  border-color: #ccc;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* === BUTTON / INTERACTIVES === */
+button,
+select {
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
-button:hover:not(:disabled),
-select:hover,
-input:focus {
-  border-color: #cfcfcf;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-}
+/* Subtle responsive polish */
+@media (max-width: 600px) {
+  .sort-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-button.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-button.disabled:hover {
-  border-color: #d2d2d2;
-  box-shadow: none;
-}
-
-.sort-controls {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  margin: 1.5rem 0;
-}
-
-hr {
-  border: none;
-  border-top: 1px solid #eee;
-  margin: 1.5rem 0;
+  .sort-controls select {
+    width: 100%;
+  }
 }
 </style>
