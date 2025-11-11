@@ -1,6 +1,10 @@
 <template>
   <div class="lesson-list">
-    <div v-for="lesson in lessons" :key="lesson.id" class="lesson-card">
+    <div
+      v-for="lesson in lessons"
+      :key="lesson.id"
+      class="lesson-card"
+    >
       <div class="icon-wrapper">
         <i :class="['fa', lesson.icon]"></i>
       </div>
@@ -9,12 +13,16 @@
         <h2>{{ lesson.topic }}</h2>
         <p class="location">📍 {{ lesson.location }}</p>
         <p class="price">💷 £{{ lesson.price }}</p>
-        <p class="spaces">
-          <span v-if="lesson.space > 0">👥 {{ lesson.space }} spaces left</span>
-          <span v-else class="sold-out">❌ Sold Out</span>
+        <p class="spaces" :class="{ soldout: lesson.space === 0 }">
+          {{ lesson.space > 0 ? `${lesson.space} spaces left` : 'Sold Out' }}
         </p>
 
-        <button :disabled="lesson.space === 0" @click="addToCart(lesson)">
+        <button
+          class="add-btn"
+          :disabled="lesson.space === 0"
+          @click="addToCart(lesson)"
+        >
+          <i class="fa fa-plus-circle"></i>
           {{ lesson.space > 0 ? 'Add to Cart' : 'Unavailable' }}
         </button>
       </div>
@@ -32,33 +40,32 @@ export default {
 .lesson-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 24px;
-  padding: 20px 0;
+  gap: 28px;
+  padding: 1rem 0 3rem;
 }
 
-/* Card container */
+/* === Card Layout === */
 .lesson-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f9f9fb 100%);
-  border: 1px solid #f1f1f1;
+  background: #fff;
+  border: 1px solid #e8e8e8;
   border-radius: 20px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  padding: 2rem 1.5rem;
   text-align: center;
   transition: all 0.25s ease;
-  position: relative;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .lesson-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
-/* Icon styling */
+/* === Icon === */
 .icon-wrapper {
-  background: linear-gradient(135deg, #ede9fe, #f5f3ff);
+  background: #070707;
   width: 60px;
   height: 60px;
-  margin: 0 auto 12px;
+  margin: 0 auto 1rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -66,62 +73,73 @@ export default {
 }
 
 .icon-wrapper i {
-  font-size: 24px;
-  color: #7c3aed;
+  color: #ffffff;
+  font-size: 22px;
 }
 
-/* Text styling */
+/* === Text === */
 .lesson-info h2 {
   font-size: 1.25rem;
   margin-bottom: 0.3rem;
-  color: #1f1f1f;
-  font-weight: 600;
+  font-weight: 700;
+  color: #070707;
 }
 
 .lesson-info p {
-  margin: 0.2rem 0;
+  margin: 0.25rem 0;
   font-size: 0.95rem;
-  color: #555;
+  color: #333;
 }
 
 .price {
-  font-weight: 500;
-  color: #333;
+  font-weight: 600;
+  color: #070707;
 }
 
 .spaces {
   margin-top: 0.5rem;
   font-size: 0.9rem;
-  color: #666;
+  color: #555;
+  font-weight: 500;
 }
 
-.sold-out {
-  color: #e11d48;
+.spaces.soldout {
+  color: #b91c1c;
   font-weight: 600;
 }
 
-/* Button */
-button {
-  margin-top: 0.8rem;
-  background: linear-gradient(135deg, #7c3aed, #facc15);
-  color: white;
+/* === Add to Cart Button === */
+.add-btn {
+  margin-top: 1rem;
+  background: #070707;
+  color: #fff;
   border: none;
-  border-radius: 12px;
-  padding: 10px 14px;
+  border-radius: 10px;
+  padding: 0.75rem 1.4rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   width: 100%;
+  transition: all 0.25s ease;
 }
 
-button:hover:not(:disabled) {
+.add-btn:hover:not(:disabled) {
+  background: #1c1c1c;
   transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
 }
 
-button:disabled {
-  background: #e5e5e5;
-  color: #999;
+.add-btn:disabled {
+  background: #e6e6e6;
+  color: #777;
   cursor: not-allowed;
+}
+
+/* Light background for contrast */
+.lesson-card:nth-child(odd) {
+  background: #fafafa;
 }
 </style>

@@ -7,13 +7,14 @@
       <p class="subtitle">
         Discover after-school classes designed to inspire curiosity, creativity, and growth.
       </p>
-      <button @click="showCart = false" class="primary-btn">Browse Lessons</button>
+      <button @click="scrollToLessons" class="primary-btn">Browse Lessons</button>
+
     </header>
 
     <!-- Main Content -->
     <main>
       <div v-if="!showCart">
-        <div class="sort-controls">
+        <div class="sort-controls" ref="lessonsSection">
           <label>Sort by:</label>
           <select v-model="sortAttribute">
             <option value="topic">Topic</option>
@@ -34,6 +35,7 @@
         <ShoppingCart :cart="cart" :removeFromCart="removeFromCart" />
       </div>
     </main>
+
   </div>
 </template>
 
@@ -79,8 +81,15 @@ export default {
     },
     toggleCart() {
       this.showCart = !this.showCart
+    },
+    scrollToLessons() {
+      const section = this.$refs.lessonsSection
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
     }
   },
+
   async mounted() {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/lessons`)
@@ -120,7 +129,7 @@ export default {
 body {
   margin: 0;
   font-family: 'Manrope', sans-serif;
-  background-color: #f7f7f7;
+  background-color: #f5f4f2;
   color: #111;
   line-height: 1.6;
 }
@@ -135,22 +144,19 @@ body {
 .hero {
   text-align: center;
   padding: 5rem 1rem 3rem;
-  background: #fff;
-  border-radius: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   margin-bottom: 2rem;
 }
 
 .brand {
   font-weight: 800;
-  font-size: 2.8rem;
+  font-size: 4rem;
   letter-spacing: -1px;
   margin: 0;
   color: #111;
 }
 
 .tagline {
-  font-size: 1.9rem;
+  font-size: 1.7rem;
   font-weight: 700;
   color: #333;
   margin: 0.6rem 0;
@@ -188,7 +194,6 @@ body {
   flex-wrap: wrap;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  background: #fff;
   border-radius: 16px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   margin: 2rem auto;
