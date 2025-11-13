@@ -11,6 +11,16 @@
 
     </header>
 
+    <!-- Cart Toggle Button -->
+    <div class="cart-bar">
+      <button class="cart-btn" @click="toggleCart">
+        <i class="fa fa-shopping-cart"></i>
+        <span v-if="!showCart">View Cart ({{ cart.length }})</span>
+        <span v-else>Back to Lessons</span>
+      </button>
+    </div>
+
+
     <!-- Main Content -->
     <main>
       <div v-if="!showCart">
@@ -154,6 +164,46 @@ body {
   margin: 0;
   color: #111;
 }
+
+.cart-bar {
+  text-align: center;
+  margin: 1.5rem 0 2.5rem;
+}
+
+.cart-btn {
+  background: #545454;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 0.9rem 1.8rem;
+  font-weight: 600;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.25s ease;
+}
+
+.cart-btn:hover {
+  background: #ffb300;
+  color: #111;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.cart-btn i {
+  font-size: 1rem;
+}
+
+.cart-btn:disabled {
+  background: #e5e5e5;
+  color: #777;
+  cursor: not-allowed;
+}
+
 
 .tagline {
   font-size: 1.7rem;

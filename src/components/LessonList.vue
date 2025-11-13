@@ -1,10 +1,6 @@
 <template>
   <div class="lesson-list">
-    <div
-      v-for="lesson in lessons"
-      :key="lesson.id"
-      class="lesson-card"
-    >
+    <div v-for="lesson in lessons" :key="lesson.id" class="lesson-card" :style="{ background: lesson.bg }">
       <div class="icon-wrapper">
         <i :class="['fa', lesson.icon]"></i>
       </div>
@@ -17,11 +13,7 @@
           {{ lesson.space > 0 ? `${lesson.space} spaces left` : 'Sold Out' }}
         </p>
 
-        <button
-          class="add-btn"
-          :disabled="lesson.space === 0"
-          @click="addToCart(lesson)"
-        >
+        <button class="add-btn" :disabled="lesson.space === 0" @click="addToCart(lesson)">
           <i class="fa fa-plus-circle"></i>
           {{ lesson.space > 0 ? 'Add to Cart' : 'Unavailable' }}
         </button>
@@ -32,7 +24,20 @@
 
 <script>
 export default {
-  props: ['lessons', 'addToCart']
+  props: ['lessons', 'addToCart'],
+  mounted() {
+    // pastel background tones
+    const pastels = [
+      '#f9f7f6', // warm white
+      '#f6f3ff', // lavender hint
+      '#f3f8ff', // soft blue
+      '#fef6f8', // light blush
+      '#f9faf3'  // soft sage
+    ]
+    this.lessons.forEach((lesson, i) => {
+      lesson.bg = pastels[i % pastels.length]
+    })
+  }
 }
 </script>
 
@@ -46,23 +51,23 @@ export default {
 
 /* === Card Layout === */
 .lesson-card {
-  background: #fff;
   border: 1px solid #e8e8e8;
   border-radius: 20px;
   padding: 2rem 1.5rem;
   text-align: center;
-  transition: all 0.25s ease;
+  transition: all 0.3s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .lesson-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-6px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  filter: brightness(1.03);
 }
 
 /* === Icon === */
 .icon-wrapper {
-  background: #070707;
+  background: #393939;
   width: 60px;
   height: 60px;
   margin: 0 auto 1rem;
@@ -73,7 +78,7 @@ export default {
 }
 
 .icon-wrapper i {
-  color: #ffffff;
+  color: #fff;
   font-size: 22px;
 }
 
@@ -111,7 +116,7 @@ export default {
 /* === Add to Cart Button === */
 .add-btn {
   margin-top: 1rem;
-  background: #070707;
+  background: #141414;
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -127,19 +132,14 @@ export default {
 }
 
 .add-btn:hover:not(:disabled) {
-  background: #1c1c1c;
+  background: #1a1a1a;
   transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
 
 .add-btn:disabled {
   background: #e6e6e6;
   color: #777;
   cursor: not-allowed;
-}
-
-/* Light background for contrast */
-.lesson-card:nth-child(odd) {
-  background: #fafafa;
 }
 </style>
