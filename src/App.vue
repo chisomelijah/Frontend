@@ -8,7 +8,6 @@
         Discover after-school classes designed to inspire curiosity, creativity, and growth.
       </p>
       <button @click="scrollToLessons" class="primary-btn">Browse Lessons</button>
-
     </header>
 
     <!-- Cart Toggle Button -->
