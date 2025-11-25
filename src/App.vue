@@ -101,7 +101,7 @@ export default {
 
   async mounted() {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lessons`)
+     const response = await fetch('https://backend-51j0.onrender.com/api/lessons')
       const data = await response.json()
 
       const icons = {
