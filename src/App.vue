@@ -102,7 +102,7 @@ export default {
 
   async mounted() {
     try {
-      const response = await fetch(`${API_URL}/api/lessons`)
+      const response = await fetch('https://backend-51j0.onrender.com/api/lessons')
       const data = await response.json()
 
       const icons = {
