@@ -51,6 +51,7 @@
 <script>
 import LessonList from './components/LessonList.vue'
 import ShoppingCart from './components/ShoppingCart.vue'
+import { API_URL } from './config';
 
 export default {
   components: { LessonList, ShoppingCart },
@@ -101,7 +102,7 @@ export default {
 
   async mounted() {
     try {
-     const response = await fetch('https://backend-51j0.onrender.com/api/lessons')
+      const response = await fetch(`${API_URL}/api/lessons`)
       const data = await response.json()
 
       const icons = {
