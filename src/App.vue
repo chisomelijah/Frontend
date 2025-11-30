@@ -130,7 +130,38 @@ export default {
     } catch (err) {
       console.error('❌ Failed to fetch lessons:', err)
     }
+  },
+
+  data() {
+    return {
+      lessons: [],
+      searchTerm: "",
+      baseUrl: 'https://backend-51j0.onrender.com/api',
+    };
+  },
+  methods: {
+    async searchLessons() {
+      if (this.searchTerm.trim() === "") {
+        // Return all lessons if search is empty
+        this.getLessons();
+        return;
+      }
+
+      const response = await fetch(`${this.baseUrl}/search?query=${this.searchTerm}`);
+      const data = await response.json();
+      this.lessons = data;
+    },
+
+    async getLessons() {
+      const response = await fetch(`${this.baseUrl}/lessons`);
+      const data = await response.json();
+      this.lessons = data;
+    }
+  },
+  mounted() {
+    this.getLessons();
   }
+
 }
 </script>
 
