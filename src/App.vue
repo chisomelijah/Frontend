@@ -101,7 +101,8 @@ export default {
 
   async mounted() {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/lessons`)
+      const API_URL = import.meta.env.VITE_API_URL
+      const response = await fetch(`${API_URL}/api/lessons`)
       const data = await response.json()
 
       const icons = {
