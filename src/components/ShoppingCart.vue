@@ -98,7 +98,7 @@ export default {
           }))
         }
 
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/orders`, {
+        const response = await fetch(`https://backend-51j0.onrender.com/api/orders`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(orderData)
