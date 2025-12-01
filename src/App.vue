@@ -12,7 +12,7 @@
 
     <!-- Cart Toggle Button -->
     <div class="cart-bar">
-      <button class="cart-btn" @click="toggleCart">
+      <button class="cart-btn" @click="toggleCart" :disabled="cart.length === 0 && !showCart">
         <i class="fa fa-shopping-cart"></i>
         <span v-if="!showCart">View Cart ({{ cart.length }})</span>
         <span v-else>Back to Lessons</span>
