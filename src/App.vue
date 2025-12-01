@@ -12,7 +12,8 @@
 
     <!-- Cart Toggle Button -->
     <div class="cart-bar">
-      <button class="cart-btn" @click="toggleCart" :disabled="cart.length === 0 && !showCart">
+      <button class="cart-btn" @click="toggleCart" :disabled="cart.length === 0"
+        :title="cart.length === 0 ? 'Your cart is empty' : ''">
         <i class="fa fa-shopping-cart"></i>
         <span v-if="!showCart">View Cart ({{ cart.length }})</span>
         <span v-else>Back to Lessons</span>
@@ -203,6 +204,18 @@ body {
   color: #777;
   cursor: not-allowed;
 }
+
+.cart-btn:disabled {
+  background: #e5e5e5;
+  color: #777;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.cart-btn:not(:disabled) {
+  cursor: pointer;
+}
+
 
 
 .tagline {
