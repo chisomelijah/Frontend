@@ -98,7 +98,8 @@ export default {
           }))
         }
 
-        const response = await fetch(`https://backend-51j0.onrender.com/api/orders`, {
+        const API_URL = import.meta.env.VITE_API_URL
+        const response = await fetch(`${API_URL}/api/orders`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(orderData)
@@ -284,6 +285,40 @@ input:focus {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+.error-msg {
+  color: #b71c1c;
+  background: #fdecea;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 12px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .checkout-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.error-msg {
+  color: #b71c1c;
+  background: #fdecea;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 12px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .checkout-container {
+    grid-template-columns: 1fr;
   }
 }
 

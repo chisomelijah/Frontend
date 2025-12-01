@@ -12,7 +12,7 @@
 
     <!-- Cart Toggle Button -->
     <div class="cart-bar">
-      <button class="cart-btn" @click="toggleCart">
+      <button class="cart-btn" @click="toggleCart" :disabled="cart.length === 0 && !showCart">
         <i class="fa fa-shopping-cart"></i>
         <span v-if="!showCart">View Cart ({{ cart.length }})</span>
         <span v-else>Back to Lessons</span>
@@ -35,8 +35,6 @@
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
           </select>
-          <input type="text" v-model="searchTerm" @input="searchLessons" placeholder="Search lessons..."
-            class="search-box" />
         </div>
 
         <LessonList :lessons="sortedLessons" :addToCart="addToCart" />
@@ -103,7 +101,8 @@ export default {
 
   async mounted() {
     try {
-      const response = await fetch(`https://backend-51j0.onrender.com/api/lessons`)
+      const API_URL = import.meta.env.VITE_API_URL
+      const response = await fetch(`${API_URL}/api/lessons`)
       const data = await response.json()
 
       const icons = {
