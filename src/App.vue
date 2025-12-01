@@ -24,19 +24,27 @@
     <!-- Main Content -->
     <main>
       <div v-if="!showCart">
-        <div class="sort-controls" ref="lessonsSection">
-          <label>Sort by:</label>
-          <select v-model="sortAttribute">
-            <option value="topic">Topic</option>
-            <option value="location">Location</option>
-            <option value="price">Price</option>
-            <option value="space">Spaces</option>
-          </select>
-          <select v-model="sortOrder">
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
+        <div class="controls" ref="lessonsSection">
+          <div class="search-controls">
+            <input type="text" v-model="searchTerm" @input="onSearchInput"
+              placeholder="Search by topic, location, price, or spaces..." class="search-input" />
+          </div>
+
+          <div class="sort-controls">
+            <label>Sort by:</label>
+            <select v-model="sortAttribute">
+              <option value="topic">Topic</option>
+              <option value="location">Location</option>
+              <option value="price">Price</option>
+              <option value="space">Spaces</option>
+            </select>
+            <select v-model="sortOrder">
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
         </div>
+<div style="background:red;color:white;padding:4px;">SEARCH AREA TEST</div>
 
         <LessonList :lessons="sortedLessons" :addToCart="addToCart" />
       </div>
@@ -53,6 +61,19 @@
 import LessonList from './components/LessonList.vue'
 import ShoppingCart from './components/ShoppingCart.vue'
 
+const ICONS = {
+  Math: 'fa-square-root-variable',
+  English: 'fa-book-open',
+  Science: 'fa-flask-vial',
+  Art: 'fa-palette',
+  Music: 'fa-music',
+  History: 'fa-landmark',
+  Geography: 'fa-globe-europe',
+  Spanish: 'fa-language',
+  Biology: 'fa-dna',
+  Chemistry: 'fa-vials'
+}
+
 export default {
   components: { LessonList, ShoppingCart },
   data() {
@@ -61,7 +82,10 @@ export default {
       cart: [],
       sortAttribute: 'topic',
       sortOrder: 'asc',
-      lessons: []
+      lessons: [],
+      // 🔹 NEW: search state
+      searchTerm: '',
+      searchTimeoutId: null
     }
   },
   computed: {
@@ -97,39 +121,68 @@ export default {
       if (section) {
         section.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }
-    }
-  },
+    },
 
-  async mounted() {
-    try {
-      const API_URL = import.meta.env.VITE_API_URL
-      const response = await fetch(`${API_URL}/api/lessons`)
-      const data = await response.json()
-
-      const icons = {
-        Math: 'fa-square-root-variable',
-        English: 'fa-book-open',
-        Science: 'fa-flask-vial',
-        Art: 'fa-palette',
-        Music: 'fa-music',
-        History: 'fa-landmark',
-        Geography: 'fa-globe-europe',
-        Spanish: 'fa-language',
-        Biology: 'fa-dna',
-        Chemistry: 'fa-vials'
-      }
-
-      this.lessons = data.map(lesson => ({
+    // 🔹 Helper to map raw lesson docs to UI objects
+    mapLessons(data) {
+      return data.map(lesson => ({
         id: lesson._id,
         topic: lesson.topic,
         location: lesson.location,
         price: lesson.price,
         space: lesson.space,
-        icon: icons[lesson.topic] || 'fa-book'
+        icon: ICONS[lesson.topic] || 'fa-book'
       }))
-    } catch (err) {
-      console.error('❌ Failed to fetch lessons:', err)
+    },
+
+    // 🔹 Fetch ALL lessons (used on mount & when search cleared)
+    async fetchLessons() {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL
+        const response = await fetch(`${API_URL}/api/lessons`)
+        const data = await response.json()
+        this.lessons = this.mapLessons(data)
+      } catch (err) {
+        console.error('❌ Failed to fetch lessons:', err)
+      }
+    },
+
+    // 🔹 Call backend search endpoint
+    async searchLessons() {
+      const term = this.searchTerm.trim()
+      const API_URL = import.meta.env.VITE_API_URL
+
+      // If search box is empty, restore full list
+      if (!term) {
+        this.fetchLessons()
+        return
+      }
+
+      try {
+        const response = await fetch(
+          `${API_URL}/api/search?q=${encodeURIComponent(term)}`
+        )
+        const data = await response.json()
+        this.lessons = this.mapLessons(data)
+      } catch (err) {
+        console.error('❌ Failed to search lessons:', err)
+      }
+    },
+
+    // 🔹 Debounced input handler for "search as you type"
+    onSearchInput() {
+      if (this.searchTimeoutId) {
+        clearTimeout(this.searchTimeoutId)
+      }
+      this.searchTimeoutId = setTimeout(() => {
+        this.searchLessons()
+      }, 300)
     }
+  },
+
+  async mounted() {
+    // use the new helper instead of duplicated fetch logic
+    this.fetchLessons()
   }
 }
 </script>
@@ -216,8 +269,6 @@ body {
   cursor: pointer;
 }
 
-
-
 .tagline {
   font-size: 1.7rem;
   font-weight: 700;
@@ -288,6 +339,40 @@ body {
   border-color: #ccc;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
 }
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 2rem auto;
+  max-width: 700px;
+}
+
+.search-controls {
+  display: flex;
+  justify-content: center;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 700px;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  background: #f9f9f9;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #ccc;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* keep your existing .sort-controls styles as they are */
+
 
 /* === BUTTON / INTERACTIVES === */
 button,
