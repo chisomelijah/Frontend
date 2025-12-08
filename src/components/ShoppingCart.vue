@@ -1,4 +1,8 @@
 <template>
+  <button class="back-btn" @click="$emit('goBack')">
+    ← Back to Lessons
+  </button>
+
   <div class="checkout-page">
     <h2>Review & Checkout</h2>
 
@@ -304,6 +308,23 @@ input:focus {
     grid-template-columns: 1fr;
   }
 }
+
+
+.back-btn {
+  background: #eee;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.back-btn:hover {
+  background: #ddd;
+}
+
+
 
 .error-msg {
   color: #b71c1c;

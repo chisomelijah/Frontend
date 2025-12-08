@@ -12,16 +12,13 @@
 
     <!-- Cart Toggle Button -->
     <div class="cart-bar">
-      <button class="cart-btn" @click="toggleCart" :disabled="cart.length === 0 && !showCart"
-        :title="cart.length === 0 && !showCart ? 'Your cart is empty' : ''">
-
+      <button class="cart-btn" @click="toggleCart" :disabled="cart.length === 0"
+        :title="cart.length === 0 ? 'Your cart is empty' : ''">
         <i class="fa fa-shopping-cart"></i>
-
         <span v-if="!showCart">View Cart ({{ cart.length }})</span>
-        <span v-else>Back to Lessons</span>
+        <span v-else>Cart is empty</span>
       </button>
     </div>
-
 
 
     <!-- Main Content -->
@@ -53,7 +50,8 @@
       </div>
 
       <div v-else>
-        <ShoppingCart :cart="cart" :removeFromCart="removeFromCart" />
+        <ShoppingCart :cart="cart" :removeFromCart="removeFromCart" @goBack="showCart = false" />
+
       </div>
     </main>
 
