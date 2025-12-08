@@ -44,7 +44,7 @@
             </select>
           </div>
         </div>
-<div style="background:red;color:white;padding:4px;">SEARCH AREA TEST</div>
+        <div style="background:red;color:white;padding:4px;">SEARCH AREA TEST</div>
 
         <LessonList :lessons="sortedLessons" :addToCart="addToCart" />
       </div>
