@@ -1,7 +1,9 @@
 <template>
   <div id="app">
-    <!-- Hero Section -->
-    <header class="hero">
+
+    <!-- ================= HERO SECTION ================= -->
+    <!-- Hidden ONLY when user is viewing the cart -->
+    <header class="hero" v-if="!showCart">
       <h1 class="brand">After-Skool</h1>
       <h2 class="tagline">Level Up Your Learning</h2>
       <p class="subtitle">
@@ -10,20 +12,22 @@
       <button @click="scrollToLessons" class="primary-btn">Browse Lessons</button>
     </header>
 
-    <!-- Cart Toggle Button -->
-    <div class="cart-bar">
-      <button class="cart-btn" @click="toggleCart" :disabled="cart.length === 0"
-        :title="cart.length === 0 ? 'Your cart is empty' : ''">
+    <!-- ================= CART BUTTON ================= -->
+    <!-- Hidden on checkout page -->
+    <div class="cart-bar" v-if="!showCart">
+      <button class="cart-btn" @click="toggleCart" :disabled="cart.length === 0">
         <i class="fa fa-shopping-cart"></i>
-        <span v-if="!showCart">View Cart ({{ cart.length }})</span>
-        <span v-else>Back to Lessons</span>
+        View Cart ({{ cart.length }})
       </button>
     </div>
 
-    <!-- Main Content -->
+    <!-- ================= MAIN CONTENT ================= -->
     <main>
+
+      <!-- LESSON LIST PAGE -->
       <div v-if="!showCart">
         <div class="controls" ref="lessonsSection">
+
           <div class="search-controls">
             <input type="text" v-model="searchTerm" @input="onSearchInput"
               placeholder="Search by topic, location, price, or spaces..." class="search-input" />
@@ -37,20 +41,25 @@
               <option value="price">Price</option>
               <option value="space">Spaces</option>
             </select>
+
             <select v-model="sortOrder">
               <option value="asc">Ascending</option>
               <option value="desc">Descending</option>
             </select>
           </div>
+
         </div>
 
         <LessonList :lessons="sortedLessons" :addToCart="addToCart" />
       </div>
 
+      <!-- CHECKOUT PAGE -->
       <div v-else>
         <ShoppingCart :cart="cart" :removeFromCart="removeFromCart" />
       </div>
+
     </main>
+
   </div>
 </template>
 
@@ -73,53 +82,58 @@ const ICONS = {
 
 export default {
   components: { LessonList, ShoppingCart },
+
   data() {
     return {
       showCart: false,
       cart: [],
-      sortAttribute: 'topic',
-      sortOrder: 'asc',
+      sortAttribute: "topic",
+      sortOrder: "asc",
       lessons: [],
-      searchTerm: '',
+      searchTerm: "",
       searchTimeoutId: null
     }
   },
+
   computed: {
     sortedLessons() {
       return [...this.lessons].sort((a, b) => {
-        let x = a[this.sortAttribute]
-        let y = b[this.sortAttribute]
-        if (typeof x === 'string') x = x.toLowerCase()
-        if (typeof y === 'string') y = y.toLowerCase()
-        return this.sortOrder === 'asc'
+        let x = a[this.sortAttribute];
+        let y = b[this.sortAttribute];
+
+        if (typeof x === "string") x = x.toLowerCase();
+        if (typeof y === "string") y = y.toLowerCase();
+
+        return this.sortOrder === "asc"
           ? x > y ? 1 : x < y ? -1 : 0
-          : x < y ? 1 : x > y ? -1 : 0
-      })
+          : x < y ? 1 : x > y ? -1 : 0;
+      });
     }
   },
+
   methods: {
+    toggleCart() {
+      this.showCart = !this.showCart;
+    },
+
     addToCart(lesson) {
       if (lesson.space > 0) {
-        lesson.space--
-        this.cart.push(lesson)
-      }
-    },
-    removeFromCart(index) {
-      const item = this.cart[index]
-      item.space++
-      this.cart.splice(index, 1)
-    },
-    toggleCart() {
-      this.showCart = !this.showCart
-    },
-    scrollToLessons() {
-      const section = this.$refs.lessonsSection
-      if (section) {
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        lesson.space--;
+        this.cart.push(lesson);
       }
     },
 
-    // Helper to map raw lesson docs to UI objects
+    removeFromCart(index) {
+      const item = this.cart[index];
+      item.space++;
+      this.cart.splice(index, 1);
+    },
+
+    scrollToLessons() {
+      const section = this.$refs.lessonsSection;
+      if (section) section.scrollIntoView({ behavior: "smooth" });
+    },
+
     mapLessons(data) {
       return data.map(lesson => ({
         id: lesson._id,
@@ -127,58 +141,49 @@ export default {
         location: lesson.location,
         price: lesson.price,
         space: lesson.space,
-        icon: ICONS[lesson.topic] || 'fa-book'
-      }))
+        icon: ICONS[lesson.topic] || "fa-book"
+      }));
     },
 
-    // Fetch ALL lessons (used on mount & when search cleared)
     async fetchLessons() {
       try {
-        const API_URL = import.meta.env.VITE_API_URL
-        const response = await fetch(`${API_URL}/api/lessons`)
-        const data = await response.json()
-        this.lessons = this.mapLessons(data)
+        const API_URL = import.meta.env.VITE_API_URL;
+        const response = await fetch(`${API_URL}/api/lessons`);
+        const data = await response.json();
+        this.lessons = this.mapLessons(data);
       } catch (err) {
-        console.error('❌ Failed to fetch lessons:', err)
+        console.error("❌ Failed to fetch lessons:", err);
       }
     },
 
-    // Call backend search endpoint
     async searchLessons() {
-      const term = this.searchTerm.trim()
-      const API_URL = import.meta.env.VITE_API_URL
+      const term = this.searchTerm.trim();
+      const API_URL = import.meta.env.VITE_API_URL;
 
-      // If search box is empty, restore full list
       if (!term) {
-        this.fetchLessons()
-        return
+        this.fetchLessons();
+        return;
       }
 
       try {
-        const response = await fetch(
-          `${API_URL}/api/search?q=${encodeURIComponent(term)}`
-        )
-        const data = await response.json()
-        this.lessons = this.mapLessons(data)
+        const response = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(term)}`);
+        const data = await response.json();
+        this.lessons = this.mapLessons(data);
       } catch (err) {
-        console.error('❌ Failed to search lessons:', err)
+        console.error("❌ Failed to search lessons:", err);
       }
     },
 
-    // Debounced input handler for "search as you type"
     onSearchInput() {
-      if (this.searchTimeoutId) {
-        clearTimeout(this.searchTimeoutId)
-      }
-      this.searchTimeoutId = setTimeout(() => {
-        this.searchLessons()
-      }, 300)
+      if (this.searchTimeoutId) clearTimeout(this.searchTimeoutId);
+      this.searchTimeoutId = setTimeout(() => this.searchLessons(), 300);
     }
   },
 
   async mounted() {
-    this.fetchLessons()
+    this.fetchLessons();
   }
+
 }
 </script>
 
@@ -190,16 +195,9 @@ body {
   font-family: 'Manrope', sans-serif;
   background-color: #f5f4f2;
   color: #111;
-  line-height: 1.6;
 }
 
-#app {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-/* === HERO CASCADE === */
+/* ================= HERO ================= */
 .hero {
   text-align: center;
   padding: 5rem 1rem 3rem;
@@ -207,61 +205,15 @@ body {
 }
 
 .brand {
-  font-weight: 800;
   font-size: 4rem;
-  letter-spacing: -1px;
+  font-weight: 800;
   margin: 0;
   color: #111;
-}
-
-.cart-bar {
-  text-align: center;
-  margin: 1.5rem 0 2.5rem;
-}
-
-.cart-btn {
-  background: #545454;
-  color: #fff;
-  border: none;
-  border-radius: 50px;
-  padding: 0.9rem 1.8rem;
-  font-weight: 600;
-  font-size: 1rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  cursor: pointer;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.25s ease;
-}
-
-.cart-btn:hover {
-  background: #ffb300;
-  color: #111;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-}
-
-.cart-btn i {
-  font-size: 1rem;
-}
-
-.cart-btn:disabled {
-  background: #e5e5e5;
-  color: #777;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.cart-btn:not(:disabled) {
-  cursor: pointer;
 }
 
 .tagline {
   font-size: 1.7rem;
   font-weight: 700;
-  color: #333;
   margin: 0.6rem 0;
 }
 
@@ -272,110 +224,50 @@ body {
   margin: 0 auto 1.5rem;
 }
 
-.primary-btn {
-  background: #111;
-  color: #fff;
-  border: none;
-  padding: 0.9rem 1.8rem;
-  border-radius: 12px;
-  font-weight: 600;
-  transition: all 0.25s ease;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+/* ================= CART BUTTON ================= */
+.cart-bar {
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-.primary-btn:hover {
+.cart-btn {
+  background: #545454;
+  color: #fff;
+  padding: 0.9rem 1.8rem;
+  border-radius: 50px;
+  border: none;
+  font-weight: 600;
+}
+
+.cart-btn:hover:not(:disabled) {
   background: #ffb300;
   color: #111;
-  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.15);
 }
 
-/* === SORT & SEARCH CONTROLS === */
-.sort-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  margin: 2rem auto;
-  max-width: 600px;
-}
-
-.sort-controls label {
-  font-weight: 600;
-  font-size: 1rem;
-  color: #222;
-}
-
-.sort-controls select {
-  border: 1px solid #ddd;
-  padding: 0.6rem 1.2rem;
-  border-radius: 50px;
-  font-size: 1rem;
-  background: #f9f9f9;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 150px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-}
-
-.sort-controls select:hover,
-.sort-controls select:focus {
-  background: #fff;
-  border-color: #ccc;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-}
-
+/* ================= CONTROLS ================= */
 .controls {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin: 2rem auto;
   max-width: 700px;
-}
-
-.search-controls {
-  display: flex;
-  justify-content: center;
+  margin: 2rem auto;
 }
 
 .search-input {
   width: 100%;
-  max-width: 700px;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem;
   border-radius: 999px;
   border: 1px solid #ddd;
-  font-size: 1rem;
-  background: #f9f9f9;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  background: #fafafa;
 }
 
-.search-input:focus {
-  outline: none;
-  border-color: #ccc;
-  background: #fff;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+.sort-controls {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
 }
 
-/* === BUTTON / INTERACTIVES === */
-button,
-select {
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .sort-controls {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .sort-controls select {
-    width: 100%;
-  }
+.sort-controls select {
+  border-radius: 50px;
+  padding: 0.6rem;
+  border: 1px solid #ddd;
 }
 </style>
