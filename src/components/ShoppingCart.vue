@@ -1,11 +1,6 @@
 <template>
   <div class="checkout-page">
 
-    <!-- BACK BUTTON -->
-    <button class="back-btn" @click="$emit('goBack')">
-      ← Back to Lessons
-    </button>
-
     <h2>Review & Checkout</h2>
 
     <div class="checkout-container">
@@ -20,7 +15,6 @@
 
         <div v-else>
           <div v-for="(lesson, index) in cart" :key="index" class="cart-item">
-
             <div class="item-info">
               <h4>{{ lesson.topic }}</h4>
               <p class="location">{{ lesson.location }}</p>
@@ -80,7 +74,7 @@ export default {
       name: "",
       phone: "",
       checkoutSuccess: false,
-      checkoutError: false
+      checkoutError: false,
     };
   },
 
@@ -93,7 +87,7 @@ export default {
     },
     totalPrice() {
       return this.cart.reduce((sum, item) => sum + item.price, 0);
-    }
+    },
   },
 
   methods: {
@@ -105,11 +99,11 @@ export default {
         const orderData = {
           name: this.name,
           phone: this.phone,
-          lessons: this.cart.map(item => ({
+          lessons: this.cart.map((item) => ({
             lessonId: item.id,
             topic: item.topic,
-            price: item.price
-          }))
+            price: item.price,
+          })),
         };
 
         const API_URL = import.meta.env.VITE_API_URL;
@@ -117,53 +111,41 @@ export default {
         const response = await fetch(`${API_URL}/api/orders`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(orderData)
+          body: JSON.stringify(orderData),
         });
 
         if (!response.ok) throw new Error("Order submission failed");
 
-        // UI feedback inside checkout
         this.checkoutSuccess = true;
         this.name = "";
         this.phone = "";
 
-        // Clear cart
+        // Clear cart once successful
         this.cart.splice(0, this.cart.length);
-
-        // Tell App.vue the order completed
-        this.$emit("order-success");
 
       } catch (err) {
         console.error("❌ Checkout error:", err);
         this.checkoutError = true;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
 .checkout-page {
   background: #fff;
-  padding: 2rem;
   border-radius: 16px;
-  max-width: 950px;
-  margin: auto;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin: 2rem auto;
+  max-width: 900px;
 }
 
-.back-btn {
-  background: #eee;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-bottom: 1rem;
-  font-weight: 600;
-}
-
-.back-btn:hover {
-  background: #ddd;
+.checkout-page h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #111;
 }
 
 .checkout-container {
@@ -174,20 +156,30 @@ export default {
 
 .cart-summary,
 .checkout-form {
-  background: #fafafa;
-  padding: 1.5rem;
+  background: #fcfcfa;
+  border: 1px solid #f0f0f0;
   border-radius: 12px;
-  border: 1px solid #ececec;
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.cart-summary h3,
+.checkout-form h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #111;
 }
 
 .cart-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   background: #fff;
-  padding: 0.75rem 1rem;
+  border: 1px solid #ececec;
   border-radius: 10px;
-  margin-bottom: 0.7rem;
-  border: 1px solid #eee;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .item-info h4 {
@@ -208,8 +200,8 @@ export default {
 .remove-btn {
   background: none;
   border: none;
-  color: #888;
-  font-size: 1.2rem;
+  color: #999;
+  font-size: 1.1rem;
   cursor: pointer;
 }
 
@@ -220,8 +212,10 @@ export default {
 .cart-total {
   display: flex;
   justify-content: space-between;
+  font-size: 1rem;
+  border-top: 1px solid #eee;
   margin-top: 1rem;
-  font-weight: 600;
+  padding-top: 0.75rem;
 }
 
 form {
@@ -231,50 +225,51 @@ form {
 }
 
 input {
-  padding: 10px;
-  border-radius: 8px;
+  padding: 10px 12px;
   border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
 }
 
 input.invalid {
   border-color: #ff6b6b;
-  background: #fff5f5;
+  background-color: #fff7f7;
 }
 
 .checkout-btn {
-  background: #111;
-  color: #fff;
   padding: 12px;
   border-radius: 10px;
   border: none;
+  background-color: #111;
+  color: #fff;
   font-weight: 600;
 }
 
 .checkout-btn:hover:not(:disabled) {
-  background: #333;
+  background-color: #333;
 }
 
 .success-msg {
-  margin-top: 1rem;
-  background: #e8f8e8;
-  padding: 10px;
-  border-radius: 8px;
   color: #2e7d32;
+  background: #eaf6ea;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 12px;
+  font-weight: 500;
   text-align: center;
-  font-weight: 600;
 }
 
 .error-msg {
-  margin-top: 1rem;
-  background: #fdeaea;
-  padding: 10px;
-  border-radius: 8px;
   color: #b71c1c;
+  background: #fdecea;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 12px;
+  font-weight: 500;
   text-align: center;
-  font-weight: 600;
 }
 
-/* Mobile */
+/* Responsive */
 @media (max-width: 768px) {
   .checkout-container {
     grid-template-columns: 1fr;
