@@ -149,7 +149,7 @@ export default {
         space: lesson.space,
         icon: ICONS[lesson.topic] || 'fa-book'
       }))
-    },
+    }, 
 
     async fetchLessons() {
       try {
