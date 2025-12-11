@@ -270,4 +270,13 @@ body {
   padding: 0.6rem;
   border: 1px solid #ddd;
 }
+
+.primary-btn {
+  background: #ffb300;
+  color: #111;
+  border: none;
+  padding: 0.9rem 1.8rem;
+  border-radius: 50px;
+  font-weight: 600;
+}
 </style>
