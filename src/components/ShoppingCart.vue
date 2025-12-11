@@ -1,7 +1,7 @@
 <template>
   <div class="checkout-page">
 
-    <!-- BACK BUTTON (NEW) -->
+
     <button class="back-btn" @click="$emit('goBack')">
       ← Back to Lessons
     </button>
@@ -10,7 +10,7 @@
 
     <div class="checkout-container">
 
-      <!-- LEFT: CART SUMMARY -->
+
       <div class="cart-summary">
         <h3>Your Cart</h3>
 
@@ -137,21 +137,7 @@ export default {
 };
 </script>
 
-<style scoped>
-.back-btn {
-  background: #eee;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-bottom: 1rem;
-  font-weight: 600;
-}
-
-.back-btn:hover {
-  background: #ddd;
-}
-
+<!-- <style scoped>
 .checkout-page {
   background: #fff;
   border-radius: 16px;
@@ -172,4 +158,126 @@ export default {
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
 }
-</style>
+
+.cart-summary,
+.checkout-form {
+  background: #fcfcfa;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.cart-summary h3,
+.checkout-form h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #111;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.item-info h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.location {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.price {
+  font-weight: 600;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.remove-btn:hover {
+  color: #e74c3c;
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  border-top: 1px solid #eee;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+input.invalid {
+  border-color: #ff6b6b;
+  background-color: #fff7f7;
+}
+
+.checkout-btn {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background-color: #111;
+  color: #fff;
+  font-weight: 600;
+}
+
+.checkout-btn:hover:not(:disabled) {
+  background-color: #333;
+}
+
+.success-msg {
+  color: #2e7d32;
+  background: #eaf6ea;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 12px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.error-msg {
+  color: #b71c1c;
+  background: #fdecea;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 12px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .checkout-container {
+    grid-template-columns: 1fr;
+  }
+}
+</style> -->
