@@ -35,6 +35,7 @@
 
           <div class="sort-controls">
             <label>Sort by:</label>
+
             <select v-model="sortAttribute">
               <option value="topic">Topic</option>
               <option value="location">Location</option>
@@ -55,7 +56,7 @@
 
       <!-- CHECKOUT PAGE -->
       <div v-else>
-        <ShoppingCart :cart="cart" :removeFromCart="removeFromCart" />
+        <ShoppingCart :cart="cart" :removeFromCart="removeFromCart" @goBack="showCart = false" />
       </div>
 
     </main>
@@ -175,7 +176,7 @@ export default {
     },
 
     onSearchInput() {
-      if (this.searchTimeoutId) clearTimeout(this.searchTimeoutId);
+      if (this.$searchTimeoutId) clearTimeout(this.$searchTimeoutId);
       this.searchTimeoutId = setTimeout(() => this.searchLessons(), 300);
     }
   },
@@ -183,100 +184,9 @@ export default {
   async mounted() {
     this.fetchLessons();
   }
-
 }
 </script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
-
-body {
-  margin: 0;
-  font-family: 'Manrope', sans-serif;
-  background-color: #f5f4f2;
-  color: #111;
-}
-
-/* ================= HERO ================= */
-.hero {
-  text-align: center;
-  padding: 5rem 1rem 3rem;
-  margin-bottom: 2rem;
-}
-
-.brand {
-  font-size: 4rem;
-  font-weight: 800;
-  margin: 0;
-  color: #111;
-}
-
-.tagline {
-  font-size: 1.7rem;
-  font-weight: 700;
-  margin: 0.6rem 0;
-}
-
-.subtitle {
-  font-size: 1rem;
-  color: #555;
-  max-width: 600px;
-  margin: 0 auto 1.5rem;
-}
-
-/* ================= CART BUTTON ================= */
-.cart-bar {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.cart-btn {
-  background: #545454;
-  color: #fff;
-  padding: 0.9rem 1.8rem;
-  border-radius: 50px;
-  border: none;
-  font-weight: 600;
-}
-
-.cart-btn:hover:not(:disabled) {
-  background: #ffb300;
-  color: #111;
-}
-
-/* ================= CONTROLS ================= */
-.controls {
-  max-width: 700px;
-  margin: 2rem auto;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 999px;
-  border: 1px solid #ddd;
-  background: #fafafa;
-}
-
-.sort-controls {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.sort-controls select {
-  border-radius: 50px;
-  padding: 0.6rem;
-  border: 1px solid #ddd;
-}
-
-.primary-btn {
-  background: #ffb300;
-  color: #111;
-  border: none;
-  padding: 0.9rem 1.8rem;
-  border-radius: 50px;
-  font-weight: 600;
-}
 </style>
