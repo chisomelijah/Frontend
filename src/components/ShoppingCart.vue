@@ -77,7 +77,6 @@ export default {
       checkoutError: false,
     };
   },
-
   computed: {
     isValidName() {
       return /^[A-Za-z\s]+$/.test(this.name);
