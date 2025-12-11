@@ -137,7 +137,7 @@ export default {
 };
 </script>
 
-<!-- <style scoped>
+<style scoped>
 .checkout-page {
   background: #fff;
   border-radius: 16px;
@@ -280,4 +280,4 @@ input.invalid {
     grid-template-columns: 1fr;
   }
 }
-</style> -->
+</style>
