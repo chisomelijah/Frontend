@@ -1,16 +1,11 @@
 <template>
   <div class="checkout-page">
 
-
-    <button class="back-btn" @click="$emit('goBack')">
-      ← Back to Lessons
-    </button>
-
     <h2>Review & Checkout</h2>
 
     <div class="checkout-container">
 
-
+      <!-- LEFT: CART SUMMARY -->
       <div class="cart-summary">
         <h3>Your Cart</h3>
 
@@ -82,7 +77,6 @@ export default {
       checkoutError: false,
     };
   },
-
   computed: {
     isValidName() {
       return /^[A-Za-z\s]+$/.test(this.name);
@@ -125,7 +119,7 @@ export default {
         this.name = "";
         this.phone = "";
 
-        // Clear cart after checkout
+        // Clear cart once successful
         this.cart.splice(0, this.cart.length);
 
       } catch (err) {
