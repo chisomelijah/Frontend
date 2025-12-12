@@ -32,7 +32,7 @@
       </div>
 
       <!-- RIGHT: CHECKOUT FORM -->
-      <div class="checkout-form">
+      <div class="checkout-form"> 
         <h3>Checkout Details</h3>
 
         <form @submit.prevent="checkout">
